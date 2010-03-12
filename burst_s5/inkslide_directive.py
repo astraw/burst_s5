@@ -50,7 +50,7 @@ def visit_inkslide_html(self,node):
                 layer_ids.append( child.attrib['id'] )
 
     # output .png images in new path
-    out_dir = 'svg-slide-output'
+    out_dir = 'inkslides'
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
 
