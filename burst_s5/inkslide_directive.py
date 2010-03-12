@@ -48,28 +48,48 @@ def visit_inkslide_html(self,node):
             if child.attrib.get(attrib_key,None) == 'layer':
                 label = child.attrib[label_key]
                 layer_ids.append( child.attrib['id'] )
+
+    # output .png images in new path
     out_dir = 'svg-slide-output'
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
+
     out_base_fname = os.path.split(orig_fname)[-1]
     out_base_fname = os.path.splitext(out_base_fname)[0]
     out_base_fname = os.path.join( out_dir, out_base_fname )
+
+    # but .svg files must remain alongside originals to maintain links
+    svg_base_path, svg_base_fname = os.path.split(orig_fname)
+    svg_base_fname = '.inkslide-' + os.path.splitext(svg_base_fname)[0]
+    svg_base_fname = os.path.join( svg_base_path, svg_base_fname )
+
     image_fnames = []
     mode = 'cumulative layers'
     for i,layer_id in enumerate(layer_ids):
+        out_fname = out_base_fname + layer_id + '.png'
+
+        skip_png = False
+        if os.path.exists(out_fname):
+            modtime = os.stat(out_fname)[stat.ST_MTIME]
+            if modtime > orig_modtime:
+                skip_png = True
+
+        if skip_png:
+            continue
+
         if mode == 'single layer':
             source_fname = orig_fname
             cmd_extra = ['-i',layer_id, '-j'] # layer id
         elif mode == 'cumulative layers':
-            out_svg_fname = out_base_fname + layer_id + '.svg'
+            out_svg_fname = svg_base_fname + '-' + layer_id + '.svg'
 
-            skip = False
+            skip_svg = False
             if os.path.exists(out_svg_fname):
                 modtime = os.stat(out_svg_fname)[stat.ST_MTIME]
                 if modtime > orig_modtime:
-                    skip = True
+                    skip_svg = True
 
-            if not skip:
+            if not skip_svg:
                 newroot = copy.deepcopy(root)
                 elems = newroot.findall(tag_name)
                 for remove_layer_id in layer_ids[i+1:]:
@@ -86,22 +106,14 @@ def visit_inkslide_html(self,node):
 
             source_fname = out_svg_fname
             cmd_extra = []
-        out_fname = out_base_fname + layer_id + '.png'
 
-        skip = False
-        if os.path.exists(out_fname):
-            modtime = os.stat(out_fname)[stat.ST_MTIME]
-            if modtime > orig_modtime:
-                skip = True
-
-        if not skip:
-            cmd = [INKSCAPE,
-                   '-j',          # only export this layer
-                   '-C',          # export canvas (page)
-                   source_fname,
-                   '-e',out_fname,
-                   ] + cmd_extra
-            subprocess.check_call(cmd)
+        cmd = [INKSCAPE,
+               '-j',          # only export this layer
+               '-C',          # export canvas (page)
+               source_fname,
+               '-e',out_fname,
+               ] + cmd_extra
+        subprocess.check_call(cmd)
         image_fnames.append( out_fname )
     html = '<div class="animation container">\n'
     for i,image_fname in enumerate( image_fnames ):
