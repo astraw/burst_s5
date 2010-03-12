@@ -1,7 +1,7 @@
 from docutils.parsers import rst
 import docutils.parsers.rst.directives
 from docutils.nodes import General, Inline, Element
-import os, re, copy, sys
+import os, re, copy, sys, stat
 from lxml import etree # Ubuntu Karmic package: python-lxml
 import subprocess, tempfile
 
@@ -34,6 +34,7 @@ class InkslideDirective(rst.Directive):
 
 def visit_inkslide_html(self,node):
     orig_fname = os.path.join(SRC_DIR,node.src)
+    orig_modtime = os.stat(orig_fname)[stat.ST_MTIME]
     root = etree.parse(orig_fname).getroot()
     tag_name = '{http://www.w3.org/2000/svg}g'
     attrib_key = '{http://www.inkscape.org/namespaces/inkscape}groupmode'
@@ -58,31 +59,47 @@ def visit_inkslide_html(self,node):
             source_fname = orig_fname
             cmd_extra = ['-i',layer_id, '-j'] # layer id
         elif mode == 'cumulative layers':
-            newroot = copy.deepcopy(root)
-            elems = newroot.findall(tag_name)
-            for remove_layer_id in layer_ids[i+1:]:
-                removed = False
-                for child in elems:
-                    if (child.attrib.get(attrib_key,None) == 'layer' and
-                        child.attrib['id'] == remove_layer_id):
-                        newroot.remove( child )
-                        removed = True
-                        break
-                if not removed:
-                    raise ValueError('could not remove layer_id "%s"'%remove_layer_id)
             out_svg_fname = out_base_fname + layer_id + '.svg'
-            etree.ElementTree(newroot).write( out_svg_fname )
+
+            skip = False
+            if os.path.exists(out_svg_fname):
+                modtime = os.stat(out_svg_fname)[stat.ST_MTIME]
+                if modtime > orig_modtime:
+                    skip = True
+
+            if not skip:
+                newroot = copy.deepcopy(root)
+                elems = newroot.findall(tag_name)
+                for remove_layer_id in layer_ids[i+1:]:
+                    removed = False
+                    for child in elems:
+                        if (child.attrib.get(attrib_key,None) == 'layer' and
+                            child.attrib['id'] == remove_layer_id):
+                            newroot.remove( child )
+                            removed = True
+                            break
+                    if not removed:
+                        raise ValueError('could not remove layer_id "%s"'%remove_layer_id)
+                etree.ElementTree(newroot).write( out_svg_fname )
 
             source_fname = out_svg_fname
             cmd_extra = []
         out_fname = out_base_fname + layer_id + '.png'
-        cmd = [INKSCAPE,
-               '-j',          # only export this layer
-               '-C',          # export canvas (page)
-               source_fname,
-               '-e',out_fname,
-               ] + cmd_extra
-        subprocess.check_call(cmd)
+
+        skip = False
+        if os.path.exists(out_fname):
+            modtime = os.stat(out_fname)[stat.ST_MTIME]
+            if modtime > orig_modtime:
+                skip = True
+
+        if not skip:
+            cmd = [INKSCAPE,
+                   '-j',          # only export this layer
+                   '-C',          # export canvas (page)
+                   source_fname,
+                   '-e',out_fname,
+                   ] + cmd_extra
+            subprocess.check_call(cmd)
         image_fnames.append( out_fname )
     html = '<div class="animation container">\n'
     for i,image_fname in enumerate( image_fnames ):
