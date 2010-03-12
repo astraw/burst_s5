@@ -120,6 +120,7 @@ def visit_inkslide_html(self,node):
         cmd = [INKSCAPE,
                '-j',          # only export this layer
                '-C',          # export canvas (page)
+               '-d', os.environ.get('INKSLIDES_DPI','90'),
                '-b','white',  # white background
                '-y','0xFF',   # fully opaque
                source_fname,
