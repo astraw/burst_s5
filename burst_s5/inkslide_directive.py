@@ -39,13 +39,12 @@ def visit_inkslide_html(self,node):
     tag_name = '{http://www.w3.org/2000/svg}g'
     attrib_key = '{http://www.inkscape.org/namespaces/inkscape}groupmode'
     label_key = '{http://www.inkscape.org/namespaces/inkscape}label'
-    layers = {}
+    layer_ids = []
     for child in root:
         if child.tag == tag_name:
             if child.attrib.get(attrib_key,None) == 'layer':
                 label = child.attrib[label_key]
-                layers[label] = child.attrib['id']
-    layer_ids = [ layers[label] for label in sorted(layers.keys())]
+                layer_ids.append( child.attrib['id'] )
     out_dir = 'svg-slide-output'
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
