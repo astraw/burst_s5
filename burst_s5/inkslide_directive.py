@@ -120,6 +120,8 @@ def visit_inkslide_html(self,node):
         cmd = [INKSCAPE,
                '-j',          # only export this layer
                '-C',          # export canvas (page)
+               '-b','white',  # white background
+               '-y','0xFF',   # fully opaque
                source_fname,
                '-e',out_fname,
                ] + cmd_extra
