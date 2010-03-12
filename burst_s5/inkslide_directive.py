@@ -67,6 +67,7 @@ def visit_inkslide_html(self,node):
     mode = 'cumulative layers'
     for i,layer_id in enumerate(layer_ids):
         out_fname = out_base_fname + layer_id + '.png'
+        image_fnames.append( out_fname )
 
         skip_png = False
         if os.path.exists(out_fname):
@@ -123,7 +124,6 @@ def visit_inkslide_html(self,node):
                '-e',out_fname,
                ] + cmd_extra
         subprocess.check_call(cmd)
-        image_fnames.append( out_fname )
     html = '<div class="animation container">\n'
     for i,image_fname in enumerate( image_fnames ):
         classes = []
