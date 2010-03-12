@@ -91,6 +91,8 @@ def visit_inkslide_html(self,node):
 
             if not skip_svg:
                 newroot = copy.deepcopy(root)
+                
+                # remove undisplayed layers
                 elems = newroot.findall(tag_name)
                 for remove_layer_id in layer_ids[i+1:]:
                     removed = False
@@ -102,6 +104,13 @@ def visit_inkslide_html(self,node):
                             break
                     if not removed:
                         raise ValueError('could not remove layer_id "%s"'%remove_layer_id)
+
+                # turn on all layers (sometimes files are saved with layers turned off)
+                elems = newroot.findall(tag_name)
+                for child in elems:
+                    if 'style' in child.attrib:
+                        del child.attrib['style']
+
                 etree.ElementTree(newroot).write( out_svg_fname )
 
             source_fname = out_svg_fname
