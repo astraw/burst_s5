@@ -20,15 +20,18 @@ class inkslide(General, Inline, Element):
 
 class InkslideDirective(rst.Directive):
     """convert a multi-layered Inkscape .svg file into an incremental slide"""
-    option_spec = {
-        'src':docutils.parsers.rst.directives.path,
-        }
+    has_content = True
 
     def run(self):
         # Create node(s).
         # Node list to return.
         node = inkslide()
-        node.src = self.options['src']
+        if not len(self.content)==1:
+            raise ValueError('only one filename may be given')
+        fname = self.content[0]
+        if not os.path.exists(fname):
+            raise ValueError('filename "%s" does not exist'%fname)
+        node.src = fname
         node_list = [node]
         return node_list
 
