@@ -28,6 +28,8 @@ Emits html5 ``<video>`` tags. Supported:
  * theora encoded videos in Ogg container files
  * both of the above in a single <video> tag
 
+See also http://code.google.com/p/html5media/wiki/VideoFormats
+
 inkslide
 --------
 
@@ -62,7 +64,9 @@ writing this::
 Requirements
 ============
 
-docutils, lxml, Inkscape
+docutils, lxml.
+
+Inkscape (for the inkslide directive).
 
 On Mac, Inkscape should be installed in /Applications/Inkscape.app. On
 others, "inkscape" should be in the path.
