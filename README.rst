@@ -31,7 +31,7 @@ Emits html5 ``<video>`` tags. Supported:
 See also http://code.google.com/p/html5media/wiki/VideoFormats
 
 inklayers
---------
+---------
 
 It allows you to write this in your .rst source file::
 
