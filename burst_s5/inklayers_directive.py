@@ -28,6 +28,8 @@ class InklayersDirective(rst.Directive):
     option_spec = {
         'mode':docutils.parsers.rst.directives.unchanged_required,
         'dpi':int,
+        'width':docutils.parsers.rst.directives.unchanged_required,
+        'height':docutils.parsers.rst.directives.unchanged_required,
         }
 
     def run(self):
@@ -52,6 +54,11 @@ class InklayersDirective(rst.Directive):
 
         default_dpi = os.environ.get('INKLAYERS_DPI',90)
         node.dpi = str(self.options.get('dpi', default_dpi ))
+
+        node.options = {}
+        for name in ['width','height']:
+            if name in self.options:
+                node.options[name] = self.options[name]
 
         node_list = [node]
         return node_list
@@ -160,9 +167,19 @@ def visit_inklayers_html(self,node):
             class_str = ' class="%s"'%( ' '.join(classes), )
         else:
             class_str = ''
-        html += '  <img%s src="%s" alt="%s">\n'%(class_str,
-                                                 image_fname,
-                                                 image_fname)
+            
+        atts = []
+        for name in ['width','height']:
+            if name in node.options:
+                atts.append( '%s="%s"'%(name,node.options[name]))
+        if len(atts):
+            atts_str = ' ' + ' '.join(atts)
+        else:
+            atts_str = ''
+
+        html += '  <img%s%s src="%s" alt="%s">\n'%(class_str,atts_str,
+                                                   image_fname,
+                                                   image_fname)
     html += '</div>'
 
     self.body.append(html)
