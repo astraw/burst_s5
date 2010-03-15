@@ -30,7 +30,7 @@ Emits html5 ``<video>`` tags. Supported:
 
 See also http://code.google.com/p/html5media/wiki/VideoFormats
 
-inkslide
+inklayers
 --------
 
 It allows you to write this in your .rst source file::
@@ -38,7 +38,7 @@ It allows you to write this in your .rst source file::
   responses to natural scenes are contrast independent
   ----------------------------------------------------
 
-  .. inkslide:: layered_graphics.svg
+  .. inklayers:: layered_graphics.svg
 
 Instead of manually saving a bunch of layers in Inkscape and then
 writing this::
@@ -66,7 +66,7 @@ Requirements
 
 docutils, lxml.
 
-Inkscape (for the inkslide directive).
+Inkscape (for the inklayers directive).
 
 On Mac, Inkscape should be installed in /Applications/Inkscape.app. On
 others, "inkscape" should be in the path.

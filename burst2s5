@@ -3,7 +3,7 @@ from docutils.core import publish_cmdline
 import docutils.nodes as nodes
 
 from burst_s5 import video_directive
-from burst_s5 import inkslide_directive
+from burst_s5 import inklayers_directive
 
 def add_node(node,**kwds):
     """monkeypatch a node translator to docutils
@@ -30,8 +30,8 @@ add_node( video_directive.video,
           html=(video_directive.visit_video_html,
                 video_directive.depart_video_html),
           )
-add_node( inkslide_directive.inkslide,
-          html=(inkslide_directive.visit_inkslide_html,
-                inkslide_directive.depart_inkslide_html),
+add_node( inklayers_directive.inklayers,
+          html=(inklayers_directive.visit_inklayers_html,
+                inklayers_directive.depart_inklayers_html),
           )
 publish_cmdline(writer_name='s5')

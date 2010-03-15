@@ -17,10 +17,10 @@ else:
     # It's on the path
     INKSCAPE = 'inkscape'
 
-class inkslide(General, Inline, Element):
+class inklayers(General, Inline, Element):
     pass
 
-class InkslideDirective(rst.Directive):
+class InklayersDirective(rst.Directive):
     """convert a multi-layered Inkscape .svg file into an incremental slide"""
     required_arguments = 1
     final_argument_whitespace = True # allow filenames with spaces
@@ -32,7 +32,7 @@ class InkslideDirective(rst.Directive):
 
     def run(self):
         # Create node(s).
-        node = inkslide()
+        node = inklayers()
         fname = self.arguments[0]
         if not os.path.exists(fname):
             raise ValueError('filename "%s" does not exist'%fname)
@@ -50,13 +50,13 @@ class InkslideDirective(rst.Directive):
         else:
             node.mode = 'overlay'
 
-        default_dpi = os.environ.get('INKSLIDES_DPI',90)
+        default_dpi = os.environ.get('INKLAYERS_DPI',90)
         node.dpi = str(self.options.get('dpi', default_dpi ))
 
         node_list = [node]
         return node_list
 
-def visit_inkslide_html(self,node):
+def visit_inklayers_html(self,node):
     orig_fname = os.path.join(SRC_DIR,node.src)
     orig_modtime = os.stat(orig_fname)[stat.ST_MTIME]
     root = etree.parse(orig_fname).getroot()
@@ -71,7 +71,7 @@ def visit_inkslide_html(self,node):
                 layer_ids.append( child.attrib['id'] )
 
     # output .png images in new path
-    out_dir = 'inkslides'
+    out_dir = 'inklayers'
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
 
@@ -81,7 +81,7 @@ def visit_inkslide_html(self,node):
 
     # but .svg files must remain alongside originals to maintain links
     svg_base_path, svg_base_fname = os.path.split(orig_fname)
-    svg_base_fname = '.inkslide-' + os.path.splitext(svg_base_fname)[0]
+    svg_base_fname = '.inklayers-' + os.path.splitext(svg_base_fname)[0]
     svg_base_fname = os.path.join( svg_base_path, svg_base_fname )
 
     image_fnames = []
@@ -167,7 +167,7 @@ def visit_inkslide_html(self,node):
 
     self.body.append(html)
 
-def depart_inkslide_html(self,node):
+def depart_inklayers_html(self,node):
     pass
 
-docutils.parsers.rst.directives.register_directive( 'inkslide', InkslideDirective )
+docutils.parsers.rst.directives.register_directive( 'inklayers', InklayersDirective )
