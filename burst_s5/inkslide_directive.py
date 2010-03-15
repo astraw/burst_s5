@@ -27,6 +27,7 @@ class InkslideDirective(rst.Directive):
 
     option_spec = {
         'mode':docutils.parsers.rst.directives.unchanged_required,
+        'dpi':int,
         }
 
     def run(self):
@@ -48,6 +49,9 @@ class InkslideDirective(rst.Directive):
             node.mode = use_mode
         else:
             node.mode = 'overlay'
+
+        default_dpi = os.environ.get('INKSLIDES_DPI',90)
+        node.dpi = str(self.options.get('dpi', default_dpi ))
 
         node_list = [node]
         return node_list
@@ -139,7 +143,7 @@ def visit_inkslide_html(self,node):
         cmd = [INKSCAPE,
                '-j',          # only export this layer
                '-C',          # export canvas (page)
-               '-d', os.environ.get('INKSLIDES_DPI','90'),
+               '-d', node.dpi,
                source_fname,
                '-e',out_fname,
                ] + cmd_extra
