@@ -35,16 +35,16 @@ inklayers
 
 It allows you to write this in your .rst source file::
 
-  responses to natural scenes are contrast independent
-  ----------------------------------------------------
+  slide title
+  -----------
 
   .. inklayers:: layered_graphics.svg
 
 Instead of manually saving a bunch of layers in Inkscape and then
 writing this::
 
-  (old) responses to natural scenes are contrast independent
-  ----------------------------------------------------------
+  slide title
+  -----------
   							  
   .. container:: animation				  
   							  
