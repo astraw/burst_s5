@@ -52,21 +52,6 @@ class VideoDirective(rst.Directive):
             raise ValueError('video_mp4 "%s" specified, but does not exist (curdir: "%s")'%(
                 node.options['video_mp4'], os.path.abspath(os.curdir)))
 
-        # set width, height if not specified
-        if not ('width' in node.options or 'height' in node.options):
-            # width and/or height not specified
-
-            # read size from video file
-            width, height = get_width_height( node.options['video_mp4'] )
-
-            # read specified value if given
-            width = node.options.get( 'width', width )
-            height = node.options.get( 'height', height )
-
-            # set option
-            node.options['width'] = width
-            node.options['height'] = height
-
         if 'video_mp4' in node.options and 'video_ogv' not in node.options:
             ogv_fname = os.path.splitext(node.options['video_mp4'])[0] + '.ogv'
             if os.path.exists(ogv_fname):
@@ -189,38 +174,5 @@ def visit_video_html(self,node):
 
 def depart_video_html(self,node):
     pass
-
-
-def get_width_height( filename ):
-    """get width and height of video using mplayer
-
-    Source: http://www.seiichiro0185.org/doku.php/blog:n900-encode.py_create_n900-friendly_mp4-videos
-    """
-
-    import subprocess
-    mpdirs = ['/usr/bin','/usr/local/bin']
-    for mpdir in mpdirs:
-        mpbin = os.path.join(mpdir,'mplayer')
-        if os.path.exists(mpbin):
-            break
-    if not os.path.exists(mpbin):
-        raise RuntimeError('no mplayer binary found at %s'%mpbin)
-
-    # Get characteristics using mplayer
-    cmd=[mpbin, "-ao", "null", "-vo", "null", "-frames", "0", "-identify", filename]
-    mp = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-
-    s = re.compile("^ID_VIDEO_ASPECT=(.*)$", re.M)
-    m = s.search(mp[0])
-    orig_aspect = float(m.group(1))
-    s = re.compile("^ID_VIDEO_WIDTH=(.*)$", re.M)
-    m = s.search(mp[0])
-    orig_width = int(m.group(1))
-    s = re.compile("^ID_VIDEO_HEIGHT=(.*)$", re.M)
-    m = s.search(mp[0])
-    orig_height = int(m.group(1))
-
-    aspect_width = int(round(orig_aspect*orig_height))
-    return aspect_width, orig_height
 
 docutils.parsers.rst.directives.register_directive( 'video', VideoDirective )
