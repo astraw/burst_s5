@@ -1,6 +1,6 @@
-========
-burst_s5
-========
+============================================================================
+burst_s5 - standards-compliant HTML slideshows with HTML5 video and Inkscape
+============================================================================
 
 A collection of utilities docutils extensions to emit S5 slideshows
 with videos and slides designed in Inkscape, including appearing
