@@ -2,10 +2,10 @@
 burst_s5 - standards-compliant HTML slideshows with HTML5 video and Inkscape
 ============================================================================
 
-A collection of utilities docutils extensions to emit S5 slideshows
-with videos and slides designed in Inkscape, including appearing
-elements. It makes S5 presentations a little more like PowerPoint,
-Keynote, and OpenOffice Impress.
+burst_s5 is a collection of utilities docutils extensions to emit S5
+slideshows with videos and slides designed in Inkscape, including
+appearing elements. It makes S5 presentations a little more like
+PowerPoint, Keynote, and OpenOffice Impress.
 
 How to use it
 =============
