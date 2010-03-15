@@ -15,8 +15,8 @@ class VideoDirective(rst.Directive):
         'video_mp4':docutils.parsers.rst.directives.path,
         'video_ogv':docutils.parsers.rst.directives.path,
         'loop':bool,
-        'width':int,
-        'height':int,
+        'width':docutils.parsers.rst.directives.unchanged_required,
+        'height':docutils.parsers.rst.directives.unchanged_required,
         'height_short':int,
         'poster_jpg':docutils.parsers.rst.directives.path,
         'flash_swf':docutils.parsers.rst.directives.path,
@@ -53,7 +53,7 @@ class VideoDirective(rst.Directive):
                 node.options['video_mp4'], os.path.abspath(os.curdir)))
 
         # set width, height if not specified
-        if not ('width' in node.options and 'height' in node.options):
+        if not ('width' in node.options or 'height' in node.options):
             # width and/or height not specified
 
             # read size from video file
@@ -143,7 +143,7 @@ def simple_render( node ):
     template = '<div %(classes)s>\n'
 
     atts = []
-    browser_controls=False
+    browser_controls=True
     if browser_controls:
         atts.append( 'controls' )
     else:
@@ -153,7 +153,7 @@ def simple_render( node ):
         template += '</div>\n'
 
     template += '<div class="docutils-video-player">\n'
-    template += '<video width="%(width)s" height="%(height)s" %(atts)s id="%(id)s">\n'
+    template += '<video %(atts)s id="%(id)s">\n'
     if 'video_mp4' in node.options:
         template += '  <source src="%(video_mp4)s" type="video/mp4"></source>\n'
     if 'video_ogv' in node.options:
@@ -169,6 +169,10 @@ def simple_render( node ):
 
     if node.options.get('loop',False):
         atts.append('loop')
+
+    for att in ['width','height']:
+        if att in node.options:
+            atts.append('%s="%s"'%(att,node.options[att]))
 
     node.options['atts'] = ' '.join(atts)
     html = template % node.options
