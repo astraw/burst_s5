@@ -8,6 +8,8 @@ import subprocess, tempfile
 # hack(?) to point to source files
 SRC_DIR = '.'
 
+valid_modes = ['overlay', 'replace']
+
 # Where is the inkscape command?
 if sys.platform.startswith('darwin'):
     INKSCAPE = '/Applications/Inkscape.app/Contents/Resources/bin/inkscape'
@@ -20,18 +22,33 @@ class inkslide(General, Inline, Element):
 
 class InkslideDirective(rst.Directive):
     """convert a multi-layered Inkscape .svg file into an incremental slide"""
-    has_content = True
+    required_arguments = 1
+    final_argument_whitespace = True # allow filenames with spaces
+
+    option_spec = {
+        'mode':docutils.parsers.rst.directives.unchanged_required,
+        }
 
     def run(self):
         # Create node(s).
-        # Node list to return.
         node = inkslide()
-        if not len(self.content)==1:
-            raise ValueError('only one filename may be given')
-        fname = self.content[0]
+        fname = self.arguments[0]
         if not os.path.exists(fname):
             raise ValueError('filename "%s" does not exist'%fname)
         node.src = fname
+
+        if 'mode' in self.options:
+            found = 0
+            for valid_mode in valid_modes:
+                if valid_mode.startswith(self.options['mode'].lower()):
+                    found += 1
+                    use_mode = valid_mode
+            if found != 1:
+                raise ValueError('"mode" option matched %d times'%found)
+            node.mode = use_mode
+        else:
+            node.mode = 'overlay'
+
         node_list = [node]
         return node_list
 
@@ -64,7 +81,6 @@ def visit_inkslide_html(self,node):
     svg_base_fname = os.path.join( svg_base_path, svg_base_fname )
 
     image_fnames = []
-    mode = 'cumulative layers'
     for i,layer_id in enumerate(layer_ids):
         out_fname = out_base_fname + layer_id + '.png'
         image_fnames.append( out_fname )
@@ -78,10 +94,10 @@ def visit_inkslide_html(self,node):
         if skip_png:
             continue
 
-        if mode == 'single layer':
+        if node.mode == 'overlay':
             source_fname = orig_fname
             cmd_extra = ['-i',layer_id, '-j'] # layer id
-        elif mode == 'cumulative layers':
+        elif node.mode == 'replace':
             out_svg_fname = svg_base_fname + '-' + layer_id + '.svg'
 
             skip_svg = False
@@ -115,14 +131,15 @@ def visit_inkslide_html(self,node):
                 etree.ElementTree(newroot).write( out_svg_fname )
 
             source_fname = out_svg_fname
-            cmd_extra = []
+            cmd_extra = [
+                '-b','white',  # white background
+                '-y','0xFF',   # fully opaque
+                ]
 
         cmd = [INKSCAPE,
                '-j',          # only export this layer
                '-C',          # export canvas (page)
                '-d', os.environ.get('INKSLIDES_DPI','90'),
-               '-b','white',  # white background
-               '-y','0xFF',   # fully opaque
                source_fname,
                '-e',out_fname,
                ] + cmd_extra
