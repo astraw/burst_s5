@@ -6,6 +6,8 @@ import os, re
 # hack(?) to point to source files
 SRC_DIR = '.'
 
+valid_controls = ['browser','burst_s5']
+
 class video(General, Inline, Element):
     pass
 
@@ -21,6 +23,7 @@ class VideoDirective(rst.Directive):
         'poster_jpg':docutils.parsers.rst.directives.path,
         'flash_swf':docutils.parsers.rst.directives.path,
         'title':docutils.parsers.rst.directives.unchanged_required,
+        'controls':docutils.parsers.rst.directives.unchanged_required,
         }
 
     def run(self):
@@ -127,8 +130,13 @@ def simple_render( node ):
 
     template = '<div %(classes)s>\n'
 
+    controls = node.options.get('controls','browser')
+    if controls not in valid_controls:
+        raise ValueError('invalid controls option')
+
+    browser_controls=controls=='browser'
+
     atts = []
-    browser_controls=True
     if browser_controls:
         atts.append( 'controls' )
     else:
