@@ -17,6 +17,22 @@ else:
     # It's on the path
     INKSCAPE = 'inkscape'
 
+def get_stdout(cmd):
+    p = subprocess.Popen(cmd,stdout=subprocess.PIPE)
+    p.wait()
+    if p.returncode != 0:
+        raise RuntimeError('command "%s" failed with code %d'%(
+                ' '.join(cmd), p.returncode))
+    return p.stdout.read()
+
+def get_width_height( fname ):
+    cmd = [INKSCAPE,'-W',fname]
+    width = get_stdout(cmd)
+
+    cmd = [INKSCAPE,'-H',fname]
+    height = get_stdout(cmd)
+    return width, height
+
 class inklayers(General, Inline, Element):
     pass
 
@@ -155,7 +171,9 @@ def visit_inklayers_html(self,node):
                '-e',out_fname,
                ] + cmd_extra
         subprocess.check_call(cmd)
-    html = '<div class="animation container inklayers">\n'
+    width, height = get_width_height( source_fname )
+    html = ('<div class="animation container inklayers" '
+            'style="width: %spx; height: %spx;">\n'%(width,height))
     for i,image_fname in enumerate( image_fnames ):
         classes = []
         if i != 0:
