@@ -28,7 +28,19 @@ Emits html5 ``<video>`` tags. Supported:
  * theora encoded videos in Ogg container files
  * both of the above in a single <video> tag
 
-See also http://code.google.com/p/html5media/wiki/VideoFormats
+Here is an example of use::
+
+  .. class:: center
+
+    .. video::
+     :video_mp4: movie1.mp4
+     :height: 400
+     :loop: True
+
+This will insert the video ``movie1.mp4`` centered into the
+presentation. If the file ``movie1.ogv`` exists alongside the .mp4
+file, it will also be inserted. Alternatively, if only the Ogg Video
+is available, use the ``:video_ogv:`` option.
 
 inklayers
 ---------
@@ -60,6 +72,11 @@ writing this::
     .. image:: layers1234.png
        :class: incremental				  
 
+These animated images can be horizontally centered by adding this to
+your css::
+
+  /* center the inklayers generated content */
+  .inklayers { margin: auto; }
 
 Requirements
 ============
@@ -70,3 +87,10 @@ Inkscape (for the inklayers directive).
 
 On Mac, Inkscape should be installed in /Applications/Inkscape.app. On
 others, "inkscape" should be in the path.
+
+See also
+========
+
+There are other interesting resources about this type of thing:
+http://code.google.com/p/html5media/wiki/VideoFormats
+
