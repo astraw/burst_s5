@@ -8,6 +8,7 @@ import subprocess, tempfile
 # hack(?) to point to source files
 SRC_DIR = '.'
 
+CACHE_PREFIX = '.inklayers-'
 valid_modes = ['overlay', 'replace']
 
 # Where is the inkscape command?
@@ -18,7 +19,8 @@ else:
     INKSCAPE = 'inkscape'
 
 def get_stdout(cmd):
-    p = subprocess.Popen(cmd,stdout=subprocess.PIPE)
+    """call a command and return the stdout, raising exception if error"""
+    p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     p.wait()
     if p.returncode != 0:
         raise RuntimeError('command "%s" failed with code %d'%(
@@ -26,11 +28,27 @@ def get_stdout(cmd):
     return p.stdout.read()
 
 def get_width_height( fname ):
+    """get (possibly cached) width and height of .svg file with inkscape"""
+    # compute filename of cached width/height
+    wh_cache_path, wh_cache_fname = os.path.split(fname)
+    wh_cache_fname = CACHE_PREFIX+os.path.splitext(wh_cache_fname)[0]+'.txt'
+    wh_cache_fname = os.path.join( wh_cache_path, wh_cache_fname )
+
+    # read cache if it exists
+    if os.path.exists( wh_cache_fname ):
+        width,height = open( wh_cache_fname ).read().strip().split()
+        return width,height
+
+    # no cache, query inkscape for information
     cmd = [INKSCAPE,'-W',fname]
     width = get_stdout(cmd)
-
     cmd = [INKSCAPE,'-H',fname]
     height = get_stdout(cmd)
+
+    # save width, height to file
+    fd = open (wh_cache_fname,mode="w")
+    fd.write("%s %s\n"%(width,height))
+    fd.close()
     return width, height
 
 class inklayers(General, Inline, Element):
@@ -104,9 +122,10 @@ def visit_inklayers_html(self,node):
 
     # but .svg files must remain alongside originals to maintain links
     svg_base_path, svg_base_fname = os.path.split(orig_fname)
-    svg_base_fname = '.inklayers-' + os.path.splitext(svg_base_fname)[0]
+    svg_base_fname = CACHE_PREFIX + os.path.splitext(svg_base_fname)[0]
     svg_base_fname = os.path.join( svg_base_path, svg_base_fname )
 
+    source_fname = orig_fname
     image_fnames = []
     for i,layer_id in enumerate(layer_ids):
         out_fname = out_base_fname + layer_id + '.png'
@@ -122,7 +141,6 @@ def visit_inklayers_html(self,node):
             continue
 
         if node.mode == 'overlay':
-            source_fname = orig_fname
             cmd_extra = ['-i',layer_id, '-j'] # layer id
         elif node.mode == 'replace':
             out_svg_fname = svg_base_fname + '-' + layer_id + '.svg'
