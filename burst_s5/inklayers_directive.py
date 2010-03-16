@@ -155,7 +155,7 @@ def visit_inklayers_html(self,node):
                '-e',out_fname,
                ] + cmd_extra
         subprocess.check_call(cmd)
-    html = '<div class="animation container">\n'
+    html = '<div class="animation container inklayers">\n'
     for i,image_fname in enumerate( image_fnames ):
         classes = []
         if i != 0:
