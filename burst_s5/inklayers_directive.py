@@ -57,6 +57,7 @@ class inklayers(General, Inline, Element):
 class InklayersDirective(rst.Directive):
     """convert a multi-layered Inkscape .svg file into an incremental slide"""
     required_arguments = 1
+    optional_arguments = 0
     final_argument_whitespace = True # allow filenames with spaces
 
     option_spec = {
