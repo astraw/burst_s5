@@ -26,5 +26,6 @@ def convert_file(input_fname):
     shutil.move( fd.name, input_fname )
 
 if __name__=='__main__':
-    fname = sys.argv[1]
-    convert_file(fname)
+    fnames = sys.argv[1:]
+    for fname in fnames:
+        convert_file(fname)
