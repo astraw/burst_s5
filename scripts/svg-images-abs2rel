@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+import os, re, sys, tempfile, shutil
+
+re_link = re.compile( r'xlink:href="file://(.+)"')
+
+class Replacer:
+    def __init__(self, source_fname):
+        self.source_dir = os.path.split(os.path.abspath(source_fname))[0]
+    def abs_repl(self,matchobj):
+        abs_fname = matchobj.groups()[0]
+        rel_fname = os.path.relpath(abs_fname, self.source_dir)
+        result='xlink:href="%s"'%rel_fname
+        return result
+
+def convert_file(input_fname):
+    replacer = Replacer( input_fname )
+    fd = tempfile.NamedTemporaryFile(suffix='.svg',delete=False)
+    for orig_line in open(input_fname).readlines():
+
+        new_line = re_link.sub( replacer.abs_repl, orig_line)
+        fd.write(new_line)
+
+    fd.close()
+
+    os.unlink(input_fname)
+    shutil.move( fd.name, input_fname )
+
+if __name__=='__main__':
+    fname = sys.argv[1]
+    convert_file(fname)
