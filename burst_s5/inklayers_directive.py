@@ -154,7 +154,7 @@ def visit_inklayers_html(self,node):
 
             if not skip_svg:
                 newroot = copy.deepcopy(root)
-                
+
                 # remove undisplayed layers
                 elems = newroot.findall(tag_name)
                 for remove_layer_id in layer_ids[i+1:]:
@@ -204,7 +204,7 @@ def visit_inklayers_html(self,node):
             class_str = ' class="%s"'%( ' '.join(classes), )
         else:
             class_str = ''
-            
+
         atts = []
         for name in ['width','height']:
             if name in node.options:
