@@ -189,7 +189,7 @@ def visit_inklayers_html(self,node):
                source_fname,
                '-e',out_fname,
                ] + cmd_extra
-        subprocess.check_call(cmd)
+        subprocess.check_call(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     width, height = get_width_height( source_fname )
     html = ('<div class="animation container inklayers" '
             'style="width: %spx; height: %spx;">\n'%(width,height))
