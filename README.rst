@@ -2,14 +2,15 @@
 burst_s5 - standards-compliant HTML slideshows with HTML5 video and Inkscape
 ============================================================================
 
-burst_s5 is a collection of docutils_ extensions to emit S5_
+`burst_s5`_ is a collection of docutils_ extensions to emit S5_
 slideshows (based on `docutils' S5 writer`_) with videos and slides
 designed in Inkscape, including appearing elements. It makes S5
 presentations a little more like PowerPoint, Keynote, and OpenOffice
 Impress.
 
-See a sample presentation `here <http://astraw.github.com/burst_s5/saturn.html>`_.
+See a sample presentation `here <http://code.astraw.com/burst_s5/saturn.html>`_.
 
+.. _burst_s5: http://github.com/astraw/burst_s5
 .. _docutils: http://docutils.sourceforge.net/
 .. _S5: http://meyerweb.com/eric/tools/s5/
 .. _docutils' S5 writer: http://docutils.sourceforge.net/docs/user/slide-shows.s5.html
@@ -116,7 +117,7 @@ This will generate saturn.html, which illustrates the features of
 burst s5.
 
 See the rendered version of this presentation `here
-<http://astraw.github.com/burst_s5/saturn.html>`_.
+<http://code.astraw.com/burst_s5/saturn.html>`_.
 
 See also
 ========
