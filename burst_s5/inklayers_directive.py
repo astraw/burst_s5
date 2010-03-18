@@ -190,6 +190,19 @@ def visit_inklayers_html(self,node):
                '-e',out_fname,
                ] + cmd_extra
         subprocess.check_call(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
+    if 1:
+        # export all layers for handout
+        out_fname = out_base_fname + '.png'
+        cmd = [INKSCAPE,
+               '-C',          # export canvas (page)
+               '-d', node.dpi,
+               source_fname,
+               '-e',out_fname,
+               ]
+        subprocess.check_call(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        image_fnames.append( out_fname )
+
     width, height = get_width_height( source_fname )
     html = ('<div class="animation container inklayers" '
             'style="width: %spx; height: %spx;">\n'%(width,height))
@@ -197,9 +210,17 @@ def visit_inklayers_html(self,node):
         classes = []
         if i != 0:
             classes.append('incremental')
+
+        # This is slightly different than docutils documentation
+        #  suggests: make each layer in incremental, hidden and
+        #  slide-display classes, but have an extra render of all
+        #  layers than is only displayed in the handout.
+
         if i != len(image_fnames)-1:
             classes.append('hidden')
             classes.append('slide-display')
+        else:
+            classes.append('handout')
         if len(classes):
             class_str = ' class="%s"'%( ' '.join(classes), )
         else:
