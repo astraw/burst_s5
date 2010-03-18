@@ -108,7 +108,7 @@ A sample presentation
 
 For an example presentation go to ``samples`` and run::
 
-  burst2s5 saturn.rst saturn.html
+  burst2s5 --theme-url=burst-theme saturn.rst saturn.html
 
 This will generate saturn.html, which illustrates the features of
 burst s5.

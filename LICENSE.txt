@@ -43,3 +43,7 @@ The image 798px-Cassini_spacecraft.jpg is in the public domain and was
 downloaded from
 http://commons.wikimedia.org/wiki/File:Cassini_spacecraft.jpg on 17
 March 2010.
+
+The burst-theme was modified from the default S5 theme in the docutils
+package. The docutils package is in the public domain, as described at
+http://docutils.sourceforge.net/COPYING.html
