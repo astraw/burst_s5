@@ -93,6 +93,26 @@ Inkscape (for the inklayers directive).
 On Mac, Inkscape should be installed in /Applications/Inkscape.app. On
 others, "inkscape" should be in the path.
 
+Installation
+============
+
+This is a standard Python distutils package. Install with::
+
+  python setup.py install
+
+or whatever your usual incantation is. This will put two scripts on
+your path: *burst2s5* and *svg-images-abs2rel*.
+
+A sample presentation
+=====================
+
+For an example presentation go to ``samples`` and run::
+
+  burst2s5 saturn.rst saturn.html
+
+This will generate saturn.html, which illustrates the features of
+burst s5.
+
 See also
 ========
 

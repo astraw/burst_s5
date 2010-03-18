@@ -1,3 +1,5 @@
+License for burst_s5 software:
+
 Copyright (c) 2010, California Institute of Technology
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -17,3 +19,27 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+
+License for included media:
+
+The movie Saturn_ring_spokes_PIA11144_secs8to15_20080919.ogv‎is in the
+public domain and was downloaded from
+http://commons.wikimedia.org/wiki/File:Saturn_ring_spokes_PIA11144_secs8to15_20080919.ogv
+on 17 March 2010. This was transcoded to mp4 using mplayer and x264.
+
+The image 800px-Saturn_eclipse_exaggerated.jpg is in the public domain
+and was downloaded from
+http://commons.wikimedia.org/wiki/File:Saturn_eclipse_exaggerated.jpg
+on 17 March 2010.
+
+The image 597px-The_shadows_of_Saturn's_rings.jpg is in the public
+domain and was downloaded from
+http://commons.wikimedia.org/wiki/File:The_shadows_of_Saturn%27s_rings.jpg
+on 17 March 2010. The original source may have been
+http://www.nasa.gov/multimedia/imagegallery/image_feature_487.html
+
+The image 798px-Cassini_spacecraft.jpg is in the public domain and was
+downloaded from
+http://commons.wikimedia.org/wiki/File:Cassini_spacecraft.jpg on 17
+March 2010.
