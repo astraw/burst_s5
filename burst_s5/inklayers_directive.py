@@ -142,7 +142,7 @@ def visit_inklayers_html(self,node):
             continue
 
         if node.mode == 'overlay':
-            cmd_extra = ['-i',layer_id, '-j'] # layer id
+            cmd_extra = ['-i',layer_id]
         elif node.mode == 'replace':
             out_svg_fname = svg_base_fname + '-' + layer_id + '.svg'
 
