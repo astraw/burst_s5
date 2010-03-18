@@ -82,6 +82,7 @@ def simple_render( node ):
         template += '  <source src="%(video_mp4)s" type="video/mp4"></source>\n'
     if 'video_ogv' in node.options:
         template += '  <source src="%(video_ogv)s" type="video/ogg"></source>\n'
+    template += '  Sorry, your browser does not support the <pre>video</pre> tag.\n'
     template += '</video>\n'
     template += '</div>\n'
 
