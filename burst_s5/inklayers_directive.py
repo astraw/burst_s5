@@ -220,7 +220,7 @@ def visit_inklayers_html(self,node):
             classes.append('hidden')
             classes.append('slide-display')
         else:
-            classes.append('handout')
+            classes = ['handout']
         if len(classes):
             class_str = ' class="%s"'%( ' '.join(classes), )
         else:
