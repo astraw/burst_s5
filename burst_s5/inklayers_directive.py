@@ -212,7 +212,7 @@ def visit_inklayers_html(self,node):
                    '-e',out_fname,
                    ]
             get_stdout(cmd)
-            image_fnames.append( out_fname )
+        image_fnames.append( out_fname )
 
     width, height = get_width_height( source_fname )
     html = ('<div class="animation container inklayers" '
