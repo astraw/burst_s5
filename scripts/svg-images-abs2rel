@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, re, sys, tempfile, shutil
+import os, re, sys, tempfile, shutil, hashlib
 
 re_link = re.compile( r'xlink:href="file://(.+)"')
 
@@ -15,15 +15,24 @@ class Replacer:
 def convert_file(input_fname):
     replacer = Replacer( input_fname )
     fd = tempfile.NamedTemporaryFile(suffix='.svg',delete=False)
+    new_checksum = hashlib.md5()
+    orig_checksum = hashlib.md5()
     for orig_line in open(input_fname).readlines():
+        orig_checksum.update( orig_line )
 
         new_line = re_link.sub( replacer.abs_repl, orig_line)
+        new_checksum.update(new_line)
         fd.write(new_line)
 
     fd.close()
 
-    os.unlink(input_fname)
-    shutil.move( fd.name, input_fname )
+    if orig_checksum.digest() != new_checksum.digest():
+        # file changed, replace it
+        os.unlink(input_fname)
+        shutil.move( fd.name, input_fname )
+    else:
+        # unchanged, remove new temporary file
+        os.unlink( fd.name )
 
 if __name__=='__main__':
     fnames = sys.argv[1:]

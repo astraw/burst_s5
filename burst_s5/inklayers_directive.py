@@ -193,7 +193,7 @@ def visit_inklayers_html(self,node):
                source_fname,
                '-e',out_fname,
                ] + cmd_extra
-        subprocess.check_call(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        get_stdout(cmd)
 
     if 1:
         # export all layers for handout
