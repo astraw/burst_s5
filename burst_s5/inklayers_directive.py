@@ -200,7 +200,7 @@ def visit_inklayers_html(self,node):
                source_fname,
                '-e',out_fname,
                ]
-        subprocess.check_call(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        get_stdout(cmd)
         image_fnames.append( out_fname )
 
     width, height = get_width_height( source_fname )
