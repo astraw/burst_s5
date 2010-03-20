@@ -198,14 +198,21 @@ def visit_inklayers_html(self,node):
     if 1:
         # export all layers for handout
         out_fname = out_base_fname + '.png'
-        cmd = [INKSCAPE,
-               '-C',          # export canvas (page)
-               '-d', node.dpi,
-               source_fname,
-               '-e',out_fname,
-               ]
-        get_stdout(cmd)
-        image_fnames.append( out_fname )
+        skip_final_png = False
+        if os.path.exists(out_fname):
+            modtime = os.stat(out_fname)[stat.ST_MTIME]
+            if modtime > orig_modtime:
+                skip_final_png = True
+
+        if not skip_final_png:
+            cmd = [INKSCAPE,
+                   '-C',          # export canvas (page)
+                   '-d', node.dpi,
+                   source_fname,
+                   '-e',out_fname,
+                   ]
+            get_stdout(cmd)
+            image_fnames.append( out_fname )
 
     width, height = get_width_height( source_fname )
     html = ('<div class="animation container inklayers" '
