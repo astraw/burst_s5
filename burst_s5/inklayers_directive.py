@@ -31,7 +31,7 @@ def get_stdout(cmd):
     sys.stdout.flush()
     return p.stdout.read()
 
-def get_width_height( fname ):
+def get_width_height( fname, orig_modtime ):
     """get (possibly cached) width and height of .svg file with inkscape"""
     # compute filename of cached width/height
     wh_cache_path, wh_cache_fname = os.path.split(fname)
@@ -40,8 +40,10 @@ def get_width_height( fname ):
 
     # read cache if it exists
     if os.path.exists( wh_cache_fname ):
-        width,height = open( wh_cache_fname ).read().strip().split()
-        return width,height
+        modtime = os.stat(wh_cache_fname)[stat.ST_MTIME]
+        if modtime > orig_modtime:
+            width,height = open( wh_cache_fname ).read().strip().split()
+            return width,height
 
     # no cache, query inkscape for information
     cmd = [INKSCAPE,'-W',fname]
@@ -214,7 +216,7 @@ def visit_inklayers_html(self,node):
             get_stdout(cmd)
         image_fnames.append( out_fname )
 
-    width, height = get_width_height( source_fname )
+    width, height = get_width_height( source_fname, orig_modtime )
     html = ('<div class="animation container inklayers" '
             'style="width: %spx; height: %spx;">\n'%(width,height))
     for i,image_fname in enumerate( image_fnames ):
