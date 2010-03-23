@@ -65,20 +65,20 @@ writing this::
 
   slide title
   -----------
-  							  
-  .. container:: animation				  
-  							  
+
+  .. container:: animation
+
     .. image:: layer1.png
-     :class: hidden slide-display				  
-  							  
-    .. class:: incremental hidden slide-display		  
-  							  
+     :class: hidden slide-display
+
+    .. class:: incremental hidden slide-display
+
       .. image:: layers12.png
-  							  
+
       .. image:: layers123.png
-  							  
+
     .. image:: layers1234.png
-       :class: incremental				  
+       :class: incremental
 
 These animated images can be horizontally centered by adding this to
 your css::
@@ -119,9 +119,25 @@ burst s5.
 See the rendered version of this presentation `here
 <http://code.astraw.com/burst_s5/saturn.html>`_.
 
+Target screen resolution
+========================
+
+The environment variables ``BURST_S5_HEIGHT`` and
+``BURST_S5_MAX_WIDTH`` control the resolution of the output.
+
+The "standard" is a 1024x768 screen. These are the defaults. For an
+800x600 screen, this seems to work::
+
+  export BURST_S5_MAX_WIDTH="795"
+  export BURST_S5_HEIGHT="500"
+
+Also, you may be interested in changing output directory to support
+building multiple target resultions simultanously. You can set the
+target directory with the ``BURST_S5_INKLAYERS_SUFFIX`` environment
+variable.
+
 See also
 ========
 
 There are other interesting resources about this type of thing:
 http://code.google.com/p/html5media/wiki/VideoFormats
-

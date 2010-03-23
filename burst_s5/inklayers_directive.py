@@ -46,12 +46,16 @@ def get_width_height( fname, orig_modtime ):
             return width,height
 
     # no cache, query inkscape for information
-    cmd = [INKSCAPE,'-W',fname]
-    width = get_stdout(cmd)
-    cmd = [INKSCAPE,'-H',fname]
-    height = get_stdout(cmd)
+    tmpf = tempfile.NamedTemporaryFile(suffix='.png')
+    tmpf.close()
+    cmd = [INKSCAPE,'-C',fname,'-e',tmpf.name]
+    get_stdout(cmd)
+    import Image
+    # XXX TODO: convert to reading XML file instead of using PIL
+    im = Image.open(tmpf.name)
+    (width, height) = im.size
+    os.unlink(tmpf.name)
 
-    # save width, height to file
     fd = open (wh_cache_fname,mode="w")
     fd.write("%s %s\n"%(width,height))
     fd.close()
@@ -121,7 +125,7 @@ def visit_inklayers_html(self,node):
                 layer_ids.append( child.attrib['id'] )
 
     # output .png images in new path
-    out_dir = 'inklayers'
+    out_dir = 'inklayers' + os.environ.get('BURST_S5_INKLAYERS_SUFFIX','')
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
 
@@ -139,9 +143,10 @@ def visit_inklayers_html(self,node):
 
 
     srcwidth, srcheight = get_width_height( source_fname, orig_modtime )
-    STD_HEIGHT = 600.0
+    STD_HEIGHT = 600.0 # height of slide div in 1024x768
     STD_DPI = 90.0
     target_height = float(os.environ.get('BURST_S5_HEIGHT',STD_HEIGHT))
+    max_width = float(os.environ.get('BURST_S5_MAX_WIDTH',STD_HEIGHT*1.667)) # aspect of slide div in 1024x768
 
     if 'stdheight' in node.options:
         zheight = float(node.options['stdheight'])
@@ -151,6 +156,13 @@ def visit_inklayers_html(self,node):
 
         scale = height/float(srcheight)
         width = float(srcwidth)*scale
+        if width> max_width:
+            newscale = max_width/width
+            width *= newscale
+            height *= newscale
+            scale *= newscale
+        node.options['width'] = width
+        node.options['height'] = height
         dpi = str(STD_DPI*scale)
     else:
         width = node.options.get('width',srcwidth)
