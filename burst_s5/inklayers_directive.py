@@ -216,7 +216,9 @@ def visit_inklayers_html(self,node):
             get_stdout(cmd)
         image_fnames.append( out_fname )
 
-    width, height = get_width_height( source_fname, orig_modtime )
+    srcwidth, srcheight = get_width_height( source_fname, orig_modtime )
+    width = node.options.get('width',srcwidth)
+    height = node.options.get('height',srcheight)
     html = ('<div class="animation container inklayers" '
             'style="width: %spx; height: %spx;">\n'%(width,height))
     for i,image_fname in enumerate( image_fnames ):
