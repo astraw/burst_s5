@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+import burst_s5.inklayers_directive
+import sys
+
+if __name__=='__main__':
+    fnames = sys.argv[1:]
+    for fname in fnames:
+        width, height = burst_s5.inklayers_directive.get_width_height( fname )
+        print '%s %s %s'%(fname,width,height)

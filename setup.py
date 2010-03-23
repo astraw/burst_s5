@@ -6,6 +6,7 @@ setup(name='burst_s5',
       packages=['burst_s5'],
       scripts=['scripts/burst2s5',
                'scripts/svg-images-abs2rel',
+               'scripts/svg-get-size',
                ],
       description='standards-compliant HTML slideshows with HTML5 video and Inkscape',
       )
