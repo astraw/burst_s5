@@ -161,6 +161,9 @@ def visit_inklayers_html(self,node):
             width *= newscale
             height *= newscale
             scale *= newscale
+
+        width = int(round(width))
+        height = int(round(height))
         node.options['width'] = width
         node.options['height'] = height
         dpi = str(STD_DPI*scale)
