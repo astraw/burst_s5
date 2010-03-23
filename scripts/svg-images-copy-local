@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+import os, re, sys, tempfile, shutil, hashlib
+
+re_link = re.compile( r'xlink:href="/(.+)"')
+re_sodipodi = re.compile( r'sodipodi:absref="(.*)"')
+
+class Replacer:
+    def __init__(self, source_fname):
+        self.source_dir = os.path.split(os.path.abspath(source_fname))[0]
+    def abs_repl(self,matchobj):
+        abs_fname = '/' + matchobj.groups()[0]
+        rel_fname = os.path.split(abs_fname)[-1]
+        new_fullpath =os.path.join(self.source_dir,rel_fname)
+        if not os.path.exists(new_fullpath):
+            print rel_fname
+            shutil.copy( abs_fname, new_fullpath )
+        result='xlink:href="%s"'%rel_fname
+        return result
+
+def convert_file(input_fname):
+    replacer = Replacer( input_fname )
+    fd = tempfile.NamedTemporaryFile(suffix='.svg',delete=False)
+    new_checksum = hashlib.md5()
+    orig_checksum = hashlib.md5()
+    for orig_line in open(input_fname).readlines():
+        orig_checksum.update( orig_line )
+
+        new_line1 = re_link.sub( replacer.abs_repl, orig_line)
+        new_line2 = re_sodipodi.sub( '', new_line1)
+        if new_line2.strip()=='' and new_line2 != orig_line:
+            new_line3 = ''
+        else:
+            new_line3 = new_line2
+        new_checksum.update(new_line3)
+        fd.write(new_line3)
+
+    fd.close()
+
+    if orig_checksum.digest() != new_checksum.digest():
+        # file changed, replace it
+        os.unlink(input_fname)
+        shutil.move( fd.name, input_fname )
+    else:
+        # unchanged, remove new temporary file
+        os.unlink( fd.name )
+
+if __name__=='__main__':
+    fnames = sys.argv[1:]
+    for fname in fnames:
+        convert_file(fname)
