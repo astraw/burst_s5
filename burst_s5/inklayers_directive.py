@@ -68,9 +68,9 @@ class InklayersDirective(rst.Directive):
 
     option_spec = {
         'mode':docutils.parsers.rst.directives.unchanged_required,
-        'dpi':int,
         'width':docutils.parsers.rst.directives.unchanged_required,
         'height':docutils.parsers.rst.directives.unchanged_required,
+        'stdheight':docutils.parsers.rst.directives.unchanged_required,
         }
 
     def run(self):
@@ -93,13 +93,15 @@ class InklayersDirective(rst.Directive):
         else:
             node.mode = 'overlay'
 
-        default_dpi = os.environ.get('INKLAYERS_DPI',90)
-        node.dpi = str(self.options.get('dpi', default_dpi ))
-
         node.options = {}
-        for name in ['width','height']:
+        for name in ['width','height','stdheight']:
             if name in self.options:
                 node.options[name] = self.options[name]
+
+        if 'height' in self.options and 'stdheight' in self.options:
+            raise ValueError('"height" and "stdheight" options may not be simultaneously specified')
+        if 'width' in self.options and 'stdheight' in self.options:
+            raise ValueError('"width" and "stdheight" options may not be simultaneously specified')
 
         node_list = [node]
         return node_list
@@ -134,6 +136,27 @@ def visit_inklayers_html(self,node):
 
     source_fname = orig_fname
     image_fnames = []
+
+
+    srcwidth, srcheight = get_width_height( source_fname, orig_modtime )
+    STD_HEIGHT = 600.0
+    STD_DPI = 90.0
+    target_height = float(os.environ.get('BURST_S5_HEIGHT',STD_HEIGHT))
+
+    if 'stdheight' in node.options:
+        zheight = float(node.options['stdheight'])
+        frac = zheight/STD_HEIGHT # fraction of standard height
+
+        height = frac*target_height
+
+        scale = height/float(srcheight)
+        width = float(srcwidth)*scale
+        dpi = str(STD_DPI*scale)
+    else:
+        width = node.options.get('width',srcwidth)
+        height = node.options.get('height',srcheight)
+        dpi = str(STD_DPI)
+
     for i,layer_id in enumerate(layer_ids):
         out_fname = out_base_fname + layer_id + '.png'
         image_fnames.append( out_fname )
@@ -191,7 +214,7 @@ def visit_inklayers_html(self,node):
         cmd = [INKSCAPE,
                '-j',          # only export this layer
                '-C',          # export canvas (page)
-               '-d', node.dpi,
+               '-d', dpi,
                source_fname,
                '-e',out_fname,
                ] + cmd_extra
@@ -209,16 +232,13 @@ def visit_inklayers_html(self,node):
         if not skip_final_png:
             cmd = [INKSCAPE,
                    '-C',          # export canvas (page)
-                   '-d', node.dpi,
+                   '-d', dpi,
                    source_fname,
                    '-e',out_fname,
                    ]
             get_stdout(cmd)
         image_fnames.append( out_fname )
 
-    srcwidth, srcheight = get_width_height( source_fname, orig_modtime )
-    width = node.options.get('width',srcwidth)
-    height = node.options.get('height',srcheight)
     html = ('<div class="animation container inklayers" '
             'style="width: %spx; height: %spx;">\n'%(width,height))
     for i,image_fname in enumerate( image_fnames ):

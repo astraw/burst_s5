@@ -18,6 +18,7 @@ class VideoDirective(rst.Directive):
         'loop':bool,
         'width':docutils.parsers.rst.directives.unchanged_required,
         'height':docutils.parsers.rst.directives.unchanged_required,
+        'stdheight':docutils.parsers.rst.directives.unchanged_required,
         'controls':docutils.parsers.rst.directives.unchanged_required,
         }
 
@@ -95,6 +96,22 @@ def simple_render( node ):
     if node.options.get('loop',False):
         atts.append('loop')
 
+    if 'height' in node.options and 'stdheight' in node.options:
+        raise ValueError('"height" and "stdheight" options may not be simultaneously specified')
+    if 'width' in node.options and 'stdheight' in self.options:
+        raise ValueError('"width" and "stdheight" options may not be simultaneously specified')
+
+    if 'stdheight' in node.options:
+        zheight = float(node.options['stdheight'])
+        STD_HEIGHT = 600.0
+        target_height = float(os.environ.get('BURST_S5_HEIGHT',STD_HEIGHT))
+        frac = zheight/STD_HEIGHT # fraction of standard height
+
+        height = frac*target_height
+
+        node.options['height'] = height
+        del node.options['stdheight']
+
     for att in ['width','height']:
         if att in node.options:
             atts.append('%s="%s"'%(att,node.options[att]))
@@ -102,6 +119,8 @@ def simple_render( node ):
     node.options['atts'] = ' '.join(atts)
     html = template % node.options
     return html
+
+#monkey patches to docutils (I guess this is how plugins work)
 
 def visit_video_html(self,node):
     html = simple_render( node )
