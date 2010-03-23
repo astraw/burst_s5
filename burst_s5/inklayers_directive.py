@@ -31,7 +31,7 @@ def get_stdout(cmd):
     sys.stdout.flush()
     return p.stdout.read()
 
-def get_width_height( fname, orig_modtime ):
+def get_width_height( fname, orig_modtime=None ):
     """get (possibly cached) width and height of .svg file with inkscape"""
     # compute filename of cached width/height
     wh_cache_path, wh_cache_fname = os.path.split(fname)
@@ -41,6 +41,8 @@ def get_width_height( fname, orig_modtime ):
     # read cache if it exists
     if os.path.exists( wh_cache_fname ):
         modtime = os.stat(wh_cache_fname)[stat.ST_MTIME]
+        if orig_modtime is None:
+            orig_modtime = os.stat(fname)[stat.ST_MTIME]
         if modtime > orig_modtime:
             width,height = open( wh_cache_fname ).read().strip().split()
             return width,height
