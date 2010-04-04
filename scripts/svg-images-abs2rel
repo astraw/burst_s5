@@ -3,18 +3,42 @@ import os, re, sys, tempfile, shutil, hashlib
 
 re_link = re.compile( r'xlink:href="file://(.+)"')
 
+def relpath(path, start=os.path.curdir):
+    """Return a relative version of a path"""
+
+    if not path:
+        raise ValueError("no path specified")
+    
+    start_list = os.path.abspath(start).split(os.path.sep)
+    path_list = os.path.abspath(path).split(os.path.sep)
+    
+    # Work out how much of the filepath is shared by start and path.
+    i = len(os.path.commonprefix([start_list, path_list]))
+
+    rel_list = [os.path.pardir] * (len(start_list)-i) + path_list[i:]
+    return os.path.join(*rel_list)
+
+
 class Replacer:
     def __init__(self, source_fname):
         self.source_dir = os.path.split(os.path.abspath(source_fname))[0]
     def abs_repl(self,matchobj):
         abs_fname = matchobj.groups()[0]
-        rel_fname = os.path.relpath(abs_fname, self.source_dir)
+        rel_fname = relpath(abs_fname, self.source_dir)
         result='xlink:href="%s"'%rel_fname
         return result
 
 def convert_file(input_fname):
     replacer = Replacer( input_fname )
-    fd = tempfile.NamedTemporaryFile(suffix='.svg',delete=False)
+    try:
+        fd = tempfile.NamedTemporaryFile(suffix='.svg',delete=False)
+    except TypeError, err:
+        # pre Python 2.6: no delete parameter
+        fd = tempfile.NamedTemporaryFile(suffix='.svg')
+        tmp_fname = fd.name
+        fd.close()
+        fd = open(tmp_fname,mode='w+b')
+
     new_checksum = hashlib.md5()
     orig_checksum = hashlib.md5()
     for orig_line in open(input_fname).readlines():
