@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 import os, re, sys, tempfile, shutil, hashlib
 
-re_link = re.compile( r'xlink:href="file://(.+)"')
+re_link1 = re.compile( 
+    r'xlink:href="(?P<uri_prefix>file:///)(?P<fname>.+)"')
+re_link2 = re.compile( 
+    r'xlink:href="(?P<slash>/)(?P<fname>.+)"')
+
+sodipodi_link = re.compile( 
+    r'(sodipodi:absref=".*")')
 
 def relpath(path, start=os.path.curdir):
     """Return a relative version of a path"""
@@ -23,10 +29,12 @@ class Replacer:
     def __init__(self, source_fname):
         self.source_dir = os.path.split(os.path.abspath(source_fname))[0]
     def abs_repl(self,matchobj):
-        abs_fname = matchobj.groups()[0]
+        abs_fname = '/' + matchobj.group('fname')
         rel_fname = relpath(abs_fname, self.source_dir)
         result='xlink:href="%s"'%rel_fname
         return result
+    def sodipodi_repl(self,matchobj):
+        return ''
 
 def convert_file(input_fname):
     replacer = Replacer( input_fname )
@@ -44,9 +52,11 @@ def convert_file(input_fname):
     for orig_line in open(input_fname).readlines():
         orig_checksum.update( orig_line )
 
-        new_line = re_link.sub( replacer.abs_repl, orig_line)
-        new_checksum.update(new_line)
-        fd.write(new_line)
+        new_line1 = re_link1.sub( replacer.abs_repl, orig_line)
+        new_line2 = re_link2.sub( replacer.abs_repl, new_line1)
+        new_line3 = sodipodi_link.sub( replacer.sodipodi_repl, new_line2)
+        new_checksum.update(new_line3)
+        fd.write(new_line3)
 
     fd.close()
 
