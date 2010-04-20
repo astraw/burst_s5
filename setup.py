@@ -1,7 +1,9 @@
 from distutils.core import setup
 
 setup(name='burst_s5',
-      version='0.0.1',
+      version='0.1',
+      author='Andrew Straw <strawman@astraw.com>',
+      url='http://github.com/astraw/burst_s5',
       license='MIT',
       packages=['burst_s5'],
       scripts=['scripts/burst2s5',
