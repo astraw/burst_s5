@@ -5,7 +5,7 @@ from lxml import etree # Ubuntu Karmic package: python-lxml
 import tempfile
 import os, re, copy, sys, stat
 import Image # XXX TODO: convert to reading XML file instead of using PIL
-from burst_s5.inkscape_config import INKSCAPE, tag_name, attrib_key, label_key
+from burst_s5.inkscape_config import INKSCAPE, tag_name, attrib_key
 from burst_s5.util import get_stdout
 
 def get_width_height(fname):
@@ -28,7 +28,6 @@ def svg_render_layers(source_fname,mode='replace'):
     for child in root:
         if child.tag == tag_name:
             if child.attrib.get(attrib_key,None) == 'layer':
-                label = child.attrib[label_key]
                 layer_ids.append( child.attrib['id'] )
 
     out_dir = os.path.split( source_fname )[0]

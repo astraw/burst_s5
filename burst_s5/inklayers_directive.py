@@ -4,7 +4,7 @@ from docutils.nodes import General, Inline, Element
 import os, re, copy, sys, stat
 from lxml import etree # Ubuntu Karmic package: python-lxml
 import tempfile
-from inkscape_config import INKSCAPE, tag_name, attrib_key, label_key
+from inkscape_config import INKSCAPE, tag_name, attrib_key
 from util import get_stdout
 
 # hack(?) to point to source files
@@ -102,7 +102,6 @@ def visit_inklayers_html(self,node):
     for child in root:
         if child.tag == tag_name:
             if child.attrib.get(attrib_key,None) == 'layer':
-                label = child.attrib[label_key]
                 layer_ids.append( child.attrib['id'] )
 
     # output .png images in new path
