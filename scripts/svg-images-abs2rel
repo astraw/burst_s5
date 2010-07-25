@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+"""convert absolute paths in .svg images into relative paths"""
+
 import os, re, sys, tempfile, shutil, hashlib
 
 re_link1 = re.compile( 
