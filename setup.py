@@ -10,6 +10,7 @@ setup(name='burst_s5',
                'scripts/svg-images-abs2rel',
                'scripts/svg-images-copy-local',
                'scripts/svg-get-size',
+               'scripts/svg-render-layers',
                ],
       description='standards-compliant HTML slideshows with HTML5 video and Inkscape',
       )
