@@ -3,33 +3,15 @@ import docutils.parsers.rst.directives
 from docutils.nodes import General, Inline, Element
 import os, re, copy, sys, stat
 from lxml import etree # Ubuntu Karmic package: python-lxml
-import subprocess, tempfile
+import tempfile
+from inkscape_config import INKSCAPE, tag_name, attrib_key, label_key
+from util import get_stdout
 
 # hack(?) to point to source files
 SRC_DIR = '.'
 
 CACHE_PREFIX = '.inklayers-'
 valid_modes = ['overlay', 'replace']
-
-# Where is the inkscape command?
-if sys.platform.startswith('darwin'):
-    INKSCAPE = '/Applications/Inkscape.app/Contents/Resources/bin/inkscape'
-else:
-    # It's on the path
-    INKSCAPE = 'inkscape'
-
-def get_stdout(cmd):
-    """call a command and return the stdout, raising exception if error"""
-    p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    sys.stdout.write('calling "%s"...'%(' '.join(cmd)))
-    sys.stdout.flush()
-    p.wait()
-    if p.returncode != 0:
-        raise RuntimeError('command "%s" failed with code %d'%(
-                ' '.join(cmd), p.returncode))
-    sys.stdout.write('OK\n')
-    sys.stdout.flush()
-    return p.stdout.read()
 
 def get_width_height( fname, orig_modtime=None ):
     """get (possibly cached) width and height of .svg file with inkscape"""
@@ -116,9 +98,6 @@ def visit_inklayers_html(self,node):
     orig_fname = os.path.join(SRC_DIR,node.src)
     orig_modtime = os.stat(orig_fname)[stat.ST_MTIME]
     root = etree.parse(orig_fname).getroot()
-    tag_name = '{http://www.w3.org/2000/svg}g'
-    attrib_key = '{http://www.inkscape.org/namespaces/inkscape}groupmode'
-    label_key = '{http://www.inkscape.org/namespaces/inkscape}label'
     layer_ids = []
     for child in root:
         if child.tag == tag_name:
