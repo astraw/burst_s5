@@ -3,6 +3,7 @@ from docutils.core import publish_cmdline
 import docutils.nodes as nodes
 
 from burst_s5 import video_directive
+from burst_s5 import bimage_directive
 from burst_s5 import inklayers_directive
 
 def add_node(node,**kwds):
@@ -29,6 +30,10 @@ def add_node(node,**kwds):
 add_node( video_directive.video,
           html=(video_directive.visit_video_html,
                 video_directive.depart_video_html),
+          )
+add_node( bimage_directive.bimage,
+          html=(bimage_directive.visit_bimage_html,
+                bimage_directive.depart_bimage_html),
           )
 add_node( inklayers_directive.inklayers,
           html=(inklayers_directive.visit_inklayers_html,
