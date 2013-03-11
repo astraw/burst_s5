@@ -24,7 +24,23 @@ def relpath(path, start=os.path.curdir):
     i = len(os.path.commonprefix([start_list, path_list]))
 
     rel_list = [os.path.pardir] * (len(start_list)-i) + path_list[i:]
-    return os.path.join(*rel_list)
+    result = os.path.join(*rel_list)
+    if i==1 and start_list[0]=='':
+        # no real match - try if we're in a symlinked dir
+        for i in range(1,len(path_list)):
+            j = len(path_list)-i
+            sublist = path_list[:j]
+            candidate_dir = os.path.sep.join(sublist)
+            if candidate_dir=='':
+                candidate_dir='.'
+            if os.path.samefile( candidate_dir, start ):
+                rel_list = ['..']*(i-1) + [path_list[-1]]
+                r2 = os.path.sep.join(rel_list)
+                break
+
+    if len(r2)<len(result):
+        result = r2
+    return result
 
 
 class Replacer:
