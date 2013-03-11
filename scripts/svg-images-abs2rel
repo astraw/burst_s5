@@ -3,12 +3,12 @@
 
 import os, re, sys, tempfile, shutil, hashlib
 
-re_link1 = re.compile( 
+re_link1 = re.compile(
     r'xlink:href="(?P<uri_prefix>file:///)(?P<fname>.+)"')
-re_link2 = re.compile( 
+re_link2 = re.compile(
     r'xlink:href="(?P<slash>/)(?P<fname>.+)"')
 
-sodipodi_link = re.compile( 
+sodipodi_link = re.compile(
     r'(sodipodi:absref=".*")')
 
 def relpath(path, start=os.path.curdir):
@@ -16,10 +16,10 @@ def relpath(path, start=os.path.curdir):
 
     if not path:
         raise ValueError("no path specified")
-    
+
     start_list = os.path.abspath(start).split(os.path.sep)
     path_list = os.path.abspath(path).split(os.path.sep)
-    
+
     # Work out how much of the filepath is shared by start and path.
     i = len(os.path.commonprefix([start_list, path_list]))
 
