@@ -25,6 +25,7 @@ def relpath(path, start=os.path.curdir):
 
     rel_list = [os.path.pardir] * (len(start_list)-i) + path_list[i:]
     result = os.path.join(*rel_list)
+    r2 = None
     if i==1 and start_list[0]=='':
         # no real match - try if we're in a symlinked dir
         for i in range(1,len(path_list)):
@@ -38,7 +39,7 @@ def relpath(path, start=os.path.curdir):
                 r2 = os.path.sep.join(rel_list)
                 break
 
-    if len(r2)<len(result):
+    if r2 is not None and len(r2)<len(result):
         result = r2
     return result
 
