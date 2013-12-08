@@ -45,18 +45,23 @@ def relpath(path, start=os.path.curdir):
 
 
 class Replacer:
-    def __init__(self, source_fname):
+    def __init__(self, source_fname, ignore_location=False):
+        self.ignore_location=ignore_location
         self.source_dir = os.path.split(os.path.abspath(source_fname))[0]
     def abs_repl(self,matchobj):
-        abs_fname = '/' + matchobj.group('fname')
-        rel_fname = relpath(abs_fname, self.source_dir)
+        if self.ignore_location:
+            abs_fname = '/' + matchobj.group('fname')
+            rel_fname = os.path.abspath(abs_fname).split(os.path.sep)[-1]
+        else:
+            abs_fname = '/' + matchobj.group('fname')
+            rel_fname = relpath(abs_fname, self.source_dir)
         result='xlink:href="%s"'%rel_fname
         return result
     def sodipodi_repl(self,matchobj):
         return ''
 
-def convert_file(input_fname):
-    replacer = Replacer( input_fname )
+def convert_file(input_fname, ignore_location=False):
+    replacer = Replacer( input_fname, ignore_location=ignore_location )
     try:
         fd = tempfile.NamedTemporaryFile(suffix='.svg',delete=False)
     except TypeError, err:
@@ -88,6 +93,15 @@ def convert_file(input_fname):
         os.unlink( fd.name )
 
 if __name__=='__main__':
-    fnames = sys.argv[1:]
+    args = sys.argv[1:]
+
+    ignore_location = False
+    fnames = []
+    for arg in args:
+        if arg=='--ignore-location':
+            ignore_location=True
+        else:
+            fnames.append(arg)
+
     for fname in fnames:
-        convert_file(fname)
+        convert_file(fname,ignore_location=ignore_location)
