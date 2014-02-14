@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import os, re, sys, tempfile, shutil, hashlib
 
-re_link = re.compile( r'xlink:href="/(.+)"')
-re_sodipodi = re.compile( r'sodipodi:absref="(.*)"')
+re_link = re.compile( r'xlink:href="/(.+?)"')
+re_sodipodi = re.compile( r'sodipodi:absref="(.*?)"')
 
 class Replacer:
     def __init__(self, source_fname):

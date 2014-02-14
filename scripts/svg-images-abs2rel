@@ -4,9 +4,9 @@
 import os, re, sys, tempfile, shutil, hashlib
 
 re_link1 = re.compile(
-    r'xlink:href="(?P<uri_prefix>file:///)(?P<fname>.+)"')
+    r'xlink:href="(?P<uri_prefix>file:///)(?P<fname>.+?)"')
 re_link2 = re.compile(
-    r'xlink:href="(?P<slash>/)(?P<fname>.+)"')
+    r'xlink:href="(?P<slash>/)(?P<fname>.+?)"')
 
 sodipodi_link = re.compile(
     r'(sodipodi:absref=".*")')

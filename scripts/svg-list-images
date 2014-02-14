@@ -4,11 +4,11 @@
 import os, re, sys
 
 re_link1 = re.compile(
-    r'xlink:href="(?P<uri_prefix>file:///)(?P<fname>.+)"')
+    r'xlink:href="(?P<uri_prefix>file:///)(?P<fname>.+?)"')
 re_link2 = re.compile(
-    r'xlink:href="(?P<slash>/)(?P<fname>.+)"')
+    r'xlink:href="(?P<slash>/)(?P<fname>.+?)"')
 re_link3 = re.compile(
-    r'xlink:href="(?P<fname>.+)"')
+    r'xlink:href="(?P<fname>.+?)"')
 
 class Replacer:
     def __init__(self, source_fname):
